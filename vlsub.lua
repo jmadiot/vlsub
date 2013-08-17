@@ -356,13 +356,15 @@ end
 						--[[ Interface data ]]--
 
 function interface_main()
+	dlg:add_button("Auto", auto, 4, 1, 1, 1)
+	
 	dlg:add_label(lang["int_default_lang"]..':', 1, 1, 1, 1)
 	input_table['language'] =  dlg:add_dropdown(2, 1, 2, 1)
-	dlg:add_button(lang["int_search_hash"], searchHash, 4, 1, 1, 1)
+	dlg:add_button(lang["int_search_hash"], searchHash, 4, 2, 1, 1)
 	
 	dlg:add_label(lang["int_title"]..':', 1, 2, 1, 1)
 	input_table['title'] = dlg:add_text_input(openSub.movie.title or "", 2, 2, 2, 1)
-	dlg:add_button(lang["int_search_name"], searchIMBD, 4, 2, 1, 1)
+	dlg:add_button(lang["int_search_name"], searchIMBD, 4, 3, 1, 1)
 	dlg:add_label(lang["int_season"]..':', 1, 3, 1, 1)
 	input_table['seasonNumber'] = dlg:add_text_input(openSub.movie.seasonNumber or "", 2, 3, 2, 1)
 	dlg:add_label(lang["int_episode"]..':', 1, 4, 1, 1)
@@ -1285,6 +1287,14 @@ function searchIMBD()
 	end
 end
 
+function auto()
+  searchHash()
+  if openSub.movie.title ~= "" then
+    download_subtitles(1)
+    close()
+	end
+end
+
 function display_subtitles()
 	local mainlist = input_table["mainlist"]
 	mainlist:clear()
@@ -1311,9 +1321,14 @@ function get_first_sel(list)
 	return 0
 end
 
-function download_subtitles()
+function download_subtitles(is_auto)
 	local index = get_first_sel(input_table["mainlist"])
-	
+		
+	is_auto = is_auto or 0
+	if is_auto == 1 then
+	  index = 1
+	end
+
 	if index == 0 then
 		setMessage(lang["mess_no_selection"])
 		return false
